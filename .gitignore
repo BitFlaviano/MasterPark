@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# PyInstaller / build
+build/
+dist/
+*.spec
+
+# Dados locais e sensíveis
+*.lic
+tools/keys/
+db/
+backups/
+
+# IDE
+.vscode/
+.idea/
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Logs e relatórios gerados
+logs/
+relatorios/

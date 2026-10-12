@@ -1,0 +1,1575 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasterPark — Réplica HTML (mockup editável)</title>
+<style>
+/* ============================================================
+   TOKENS — espelham app/ui/theme.py (fonte única da verdade)
+   ============================================================ */
+:root{
+  --primary:#4C6FFF; --primary-dark:#3B5BEA;
+  --success:#22C55E; --danger:#EF4444; --warning:#F59E0B; --info:#06B6D4;
+  --text:#0F172A; --text2:#334155; --text-inv:#FFFFFF;
+  --brand:#0F172A;
+  --sidebar:#FFFFFF; --surface:#FFFFFF; --border:#E4EAF2; --border2:#D6E0EC;
+  --page:#F4F7FB; --muted:#64748B; --sub:#9AA8C0;
+  --raised:#F1F5F9; --hover:#F1F5F9; --field:#FFFFFF; --chip:#EEF3FF;
+  --nav-text:#334155; --nav-hover:#F1F5F9; --nav-active-bg:#EEF3FF; --nav-active-text:#3B5BEA;
+  --grid:#E4EAF2; --ghost-hover:#EEF3FF; --progress:#E7EDF5; --track:#E7EDF5; --thumb:#C7D2E0;
+  --btn-bg:#FFFFFF; --btn-border:#D6E0EC;
+  --success-soft:#DCFCE7; --tip:#1E293B;
+}
+html[data-theme="dark"]{
+  --text:#EEF2FB; --text2:#C6D2E4; --text-inv:#FFFFFF;
+  --brand:#FFFFFF;
+  --sidebar:#101728; --surface:#131C31; --border:#26324D; --border2:#31405F;
+  --page:#0B1220; --muted:#8CA0C0; --sub:#5E6F90;
+  --raised:#1E2A45; --hover:#23304F; --field:#0E172A; --chip:#1B2A52;
+  --nav-text:#C6D2E4; --nav-hover:#23304F; --nav-active-bg:#1B2A52; --nav-active-text:#6480FF;
+  --grid:#1B2740; --ghost-hover:#1B2A52; --progress:#1E2A45; --track:#1E2A45; --thumb:#33415F;
+  --btn-bg:#31405F; --btn-border:#31405F;
+  --success-soft:#0F3D28; --tip:#0F172A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family:'Segoe UI',Arial,sans-serif; font-size:13px;
+  background:var(--page); color:var(--text);
+  display:flex; height:100vh; min-width:1024px; overflow:hidden;
+}
+
+/* ============================ SIDEBAR ============================ */
+#sidebar{
+  width:264px; flex:0 0 264px; background:var(--sidebar);
+  padding:20px 14px 16px; display:flex; flex-direction:column; gap:2px; overflow-y:auto;
+}
+.brand{
+  font-size:19px; font-weight:800; color:var(--brand); letter-spacing:.5px;
+  white-space:nowrap; line-height:1.2; overflow:visible; flex:0 0 auto;
+}
+.brand-sub{color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin-top:2px}
+.nav-section{color:var(--muted); font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; margin:18px 0 6px; padding-left:14px}
+.nav-item{
+  padding:10px 14px; border-radius:8px; color:var(--nav-text); font-weight:600;
+  cursor:pointer; user-select:none; display:flex; align-items:center; gap:8px; height:38px;
+  white-space:nowrap;
+}
+.nav-item:hover{background:var(--nav-hover); color:var(--text)}
+.nav-item.active{background:var(--nav-active-bg); color:var(--nav-active-text)}
+.nav-item .kbd{margin-left:auto;font-size:10px;opacity:.55;font-weight:700}
+.version{color:var(--muted); font-size:11px; text-align:center; font-weight:700; margin-top:auto; padding-top:12px}
+
+/* ============================ RIGHT ============================ */
+#right{flex:1; display:flex; flex-direction:column; min-width:0}
+#topbar{
+  height:58px; flex:0 0 58px; background:var(--surface);
+  border-bottom:1px solid var(--border); display:flex; align-items:center;
+  gap:12px; padding:0 20px;
+}
+#welcome{font-weight:600}
+#role{color:var(--muted); font-size:11px}
+#topbar .spacer{flex:1}
+#content{flex:1; overflow-y:auto; padding:20px 24px}
+.page{padding:4px 0}
+
+/* ============================ COMPONENTS ============================ */
+.page-header{display:flex; align-items:flex-start; gap:16px; margin-bottom:8px}
+.page-title{font-size:22px; font-weight:700}
+.page-sub{color:var(--muted)}
+.actions{margin-left:auto; display:flex; gap:8px; flex-wrap:wrap}
+
+.card{
+  background:var(--surface); border:1px solid var(--border); border-radius:12px;
+  padding:14px 18px; min-width:200px;
+}
+.card-title{color:var(--muted); font-weight:600; margin-bottom:10px}
+
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:14px 0}
+.grid4{display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:14px 0}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px}
+.row2{display:grid; grid-template-columns:2fr 2fr 2fr; gap:12px; margin:14px 0}
+
+.statcard{background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:12px 16px}
+.stat-value{font-size:24px; font-weight:800; line-height:1.2}
+.stat-label{color:var(--muted); font-weight:600}
+.stat-sub{color:var(--muted); font-size:12px}
+
+button{
+  font-family:inherit; font-size:13px; font-weight:700; border:1px solid var(--btn-border);
+  border-radius:8px; padding:8px 14px; background:var(--btn-bg); color:var(--text); cursor:pointer;
+}
+button:hover{filter:brightness(.95)}
+button.primary{background:var(--primary); color:#fff; border-color:var(--primary)}
+button.primary:hover{background:var(--primary-dark); border-color:var(--primary-dark)}
+button.success{background:var(--success); color:#fff; border-color:var(--success)}
+button.danger{background:var(--danger); color:#fff; border-color:var(--danger)}
+button.warning{background:var(--warning); color:#fff; border-color:var(--warning)}
+button.ghost{background:transparent; color:var(--primary)}
+button.ghost:hover{background:var(--ghost-hover)}
+
+input,select,textarea{
+  font-family:inherit; font-size:13px; background:var(--field); color:var(--text);
+  border:1px solid var(--btn-border); border-radius:8px; padding:7px 10px; width:100%;
+}
+input:focus,select:focus,textarea:focus{outline:none;border:1px solid var(--primary)}
+label.field{display:block;margin-bottom:10px}
+label.field > span{display:block;color:var(--muted); font-weight:600; margin-bottom:4px}
+.form2{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
+
+table{width:100%; border-collapse:collapse; background:var(--surface); border-radius:8px; overflow:hidden}
+th{
+  background:var(--raised); color:var(--muted); font-weight:700; text-align:left;
+  padding:8px; border-bottom:1px solid var(--border); white-space:nowrap;
+}
+td{padding:6px 8px; border-bottom:1px solid var(--grid); white-space:nowrap}
+tbody tr{cursor:pointer}
+tbody tr:hover{background:var(--ghost-hover)}
+tbody tr.selected{background:var(--primary); color:#fff}
+tbody tr.selected td{color:#fff}
+
+.tabs{display:flex; gap:6px; margin-bottom:12px}
+.tab{background:transparent; color:var(--muted); font-weight:700; padding:8px 16px; border-radius:8px}
+.tab.active{background:var(--nav-active-bg); color:var(--nav-active-text)}
+
+.chip{
+  display:inline-flex; align-items:center; background:var(--chip); color:var(--nav-active-text);
+  border-radius:10px; padding:3px 10px; font-weight:700;
+}
+.chip.green{background:var(--success-soft); color:#15803D}
+
+/* fix Recurso 4: bolinha ● nao cortada em cima/na lateral */
+.legend{display:flex; flex-wrap:wrap; align-items:center; gap:6px}
+.legend .chip{padding:12px 16px 6px 8px; line-height:1.2}
+
+.progress{height:10px; background:var(--progress); border-radius:6px; overflow:hidden}
+.progress > i{display:block; height:100%; background:var(--primary); border-radius:6px}
+.occ-value{font-size:30px; font-weight:900; color:var(--primary); line-height:1.1}
+.payrow{display:flex; align-items:center; gap:10px; padding:3px 0}
+.payrow .n{margin-left:auto; font-size:15px; font-weight:800}
+.payrow .q{color:var(--muted)}
+.peakrow{display:flex; align-items:center; gap:8px; padding:2px 0}
+.peakrow .h{color:var(--muted); font-weight:600; width:38px; flex:0 0 38px}
+.peakrow .progress{flex:1}
+.peakrow .c{color:var(--muted); font-weight:600; width:28px; text-align:right}
+
+/* mapa */
+.map-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(84px,1fr)); gap:8px}
+.spot{
+  border-radius:8px; padding:10px 6px; text-align:center; font-weight:700; color:#fff;
+  cursor:pointer; position:relative; user-select:none;
+}
+.spot small{display:block; font-weight:500; opacity:.85; font-size:11px; margin-top:2px}
+.s-LIVRE{background:var(--success)} .s-OCUPADA{background:var(--danger)}
+.s-RESERVADA{background:var(--warning)} .s-BLOQUEADA{background:#64748B}
+.s-MANUTENCAO{background:#A855F7}
+
+/* gestao de setores/vagas */
+.spot .rm{
+  position:absolute; top:2px; right:4px; width:15px; height:15px; line-height:14px;
+  text-align:center; font-size:11px; font-weight:800; border-radius:4px;
+  background:rgba(0,0,0,.28); color:#fff; opacity:0; transition:.12s; cursor:pointer;
+}
+.spot:hover .rm{opacity:1}
+.spot .rm:hover{background:rgba(0,0,0,.55)}
+.sectools{display:flex; flex-wrap:wrap; gap:8px; align-items:center}
+.sectools .chip{font-weight:700}
+.card-title.bar{display:flex; align-items:center; gap:8px}
+.card-title.bar > .tools{margin-left:auto; display:flex; gap:6px}
+.card-title.bar button{padding:4px 10px; font-size:12px; border-radius:6px}
+.empty{border:1px dashed var(--border); border-radius:8px; padding:16px; text-align:center; color:var(--muted)}
+.statchip{display:inline-flex; align-items:center; gap:6px; padding:6px 12px; border-radius:8px;
+  background:var(--raised); font-weight:700; font-size:12px}
+.statchip .dot{width:9px; height:9px; border-radius:50%}
+.statchip b{font-size:13px; font-weight:800}
+
+/* modal + toast */
+.overlay{position:fixed; inset:0; background:rgba(15,23,42,.45); display:none; align-items:center; justify-content:center; z-index:50; padding:16px 0}
+.overlay.open{display:flex}
+.modal{
+  background:var(--surface); border-radius:12px; border:1px solid var(--border);
+  width:440px; max-width:92vw; max-height:calc(100vh - 32px);
+  display:flex; flex-direction:column; overflow:hidden;
+  box-shadow:0 18px 48px rgba(0,0,0,.28);
+}
+.modal header{padding:14px 18px; font-weight:800; font-size:15px; border-bottom:1px solid var(--border); flex:0 0 auto}
+.modal .body{padding:16px 18px; flex:1 1 auto; min-height:0; overflow-y:auto; overscroll-behavior:contain}
+.modal footer{padding:12px 18px; display:flex; gap:8px; justify-content:flex-end; border-top:1px solid var(--border); flex:0 0 auto}
+#toast{
+  position:fixed; right:20px; bottom:20px; background:var(--tip); color:var(--text-inv);
+  padding:11px 16px; border-radius:8px; font-weight:600; opacity:0; transform:translateY(12px);
+  transition:.22s; pointer-events:none; z-index:60; max-width:380px;
+}
+#toast.show{opacity:1; transform:none}
+#toast.err{background:var(--danger)}
+#toast.ok{background:var(--success)}
+
+/* busca global */
+#searchOverlay .modal{width:520px}
+#searchInput{font-size:15px}
+.sresult{padding:9px 12px; border-radius:8px; cursor:pointer; display:flex; gap:10px; align-items:center}
+.sresult:hover,.sresult.on{background:var(--ghost-hover)}
+.sresult .tag{color:var(--muted); font-size:11px; font-weight:700; margin-left:auto}
+.hint{color:var(--muted); font-size:12px}
+.kbd{background:var(--raised); border:1px solid var(--border); border-radius:4px; padding:1px 5px; font-size:11px; font-weight:700}
+.warnbox{background:rgba(245,158,11,.12); border:1px solid var(--warning); color:var(--text); padding:9px 12px; border-radius:8px; margin-bottom:10px}
+
+/* dialogo de impressao */
+#printOverlay .modal{width:640px}
+.plist{display:flex;flex-direction:column;gap:6px;margin-bottom:12px}
+.plabel{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px solid var(--border);
+  border-radius:8px;cursor:pointer;background:var(--field)}
+.plabel:hover{border-color:var(--primary); background:var(--ghost-hover)}
+.plabel.sel{border-color:var(--primary); background:var(--ghost-hover); box-shadow:inset 0 0 0 1px var(--primary)}
+.plabel input{width:auto; flex:0 0 auto; margin:0}
+.plabel .pname{font-weight:700}
+.plabel .ploc{color:var(--muted); font-size:11px; margin-left:auto; text-align:right; white-space:nowrap}
+.psim{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1px dashed var(--muted);
+  border-radius:8px;cursor:pointer;margin-bottom:12px;background:var(--raised)}
+.psim.sel{border-color:var(--primary); border-style:solid; background:var(--ghost-hover)}
+.psim input{width:auto;margin:0}
+.receipt{
+  font-family:'Consolas','Courier New',monospace; font-size:11px; line-height:1.5;
+  background:var(--raised); border:1px solid var(--border); border-radius:8px;
+  padding:10px 12px; white-space:pre; overflow-x:auto; color:var(--text);
+  text-align:center;
+}
+.wsel{display:flex;align-items:center;gap:8px;margin-top:10px}
+.wsel select{width:auto;min-width:96px}
+
+/* QR + codigo de barras no ticket */
+.tkcodes{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;
+  margin-top:12px;padding-top:12px;border-top:1px dashed var(--border)}
+.tkq{text-align:center;flex:0 0 auto}
+.tkq svg{display:block;background:#fff;padding:6px;border-radius:6px;border:1px solid var(--border)}
+.tkq .cap{font-size:10px;color:var(--muted);margin-top:4px;font-weight:700;letter-spacing:.3px}
+.tkb{width:190px;max-width:60%;text-align:center}
+.tkb svg{display:block;width:100%;height:46px}
+.tkb .hrt{font-family:'Consolas','Courier New',monospace;font-size:11px;letter-spacing:1.5px;margin-top:3px;color:var(--muted)}
+.payload{font-family:'Consolas','Courier New',monospace;font-size:10px;color:var(--muted);
+  margin-top:10px;word-break:break-all;text-align:center}
+.ticketbox{background:#fff;color:#000;border:1px solid var(--border);border-radius:8px;padding:14px}
+.ticketbox .receipt{background:#fff;color:#000;border:none;padding:0}
+</style>
+</head>
+<body>
+
+<!-- ===================== SIDEBAR ===================== -->
+<aside id="sidebar">
+  <div class="brand">M A S T E R P A R K</div>
+  <div class="brand-sub">Gestão de Estacionamentos</div>
+
+  <div class="nav-section">Operação</div>
+  <div class="nav-item" data-k="entry">🅿 Nova Entrada <span class="kbd">F2</span></div>
+  <div class="nav-item" data-k="exit">💰 Nova Saída <span class="kbd">F3</span></div>
+  <div class="nav-item" data-k="map">🗺 Mapa de Vagas</div>
+  <div class="nav-item" data-k="tickets">🎫 Tickets <span class="kbd">F4</span></div>
+
+  <div class="nav-section">Gestão</div>
+  <div class="nav-item" data-k="dashboard">📊 Dashboard</div>
+  <div class="nav-item" data-k="monthly">🗓 Mensalistas <span class="kbd">F6</span></div>
+  <div class="nav-item" data-k="customers">👤 Clientes <span class="kbd">F7</span></div>
+
+  <div class="nav-section">Financeiro</div>
+  <div class="nav-item" data-k="cash">🧾 Caixa <span class="kbd">F5</span></div>
+  <div class="nav-item" data-k="reports">📈 Relatórios <span class="kbd">F9</span></div>
+
+  <div class="nav-section">Sistema</div>
+  <div class="nav-item" data-k="settings">⚙️ Configurações</div>
+  <div class="nav-item" data-k="health">❤️ Saúde do Sistema</div>
+  <div class="nav-item" data-k="audit">🛡 Auditoria</div>
+  <div class="nav-item" data-k="about">ℹ️ Sobre o Sistema</div>
+
+  <div class="version">v1.0.0</div>
+</aside>
+
+<!-- ===================== RIGHT ===================== -->
+<div id="right">
+  <div id="topbar">
+    <div>
+      <div id="welcome">Olá, Administrador</div>
+      <div id="role">Perfil: admin</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="ghost" id="btnCash">⚪ Caixa fechado — Abrir</button>
+    <button class="ghost" id="btnSearch">🔍 Buscar <span class="kbd">Ctrl+K</span></button>
+    <button class="ghost" id="btnTheme" title="Alternar tema claro/escuro">🌗</button>
+    <button class="ghost" id="btnLogout">Sair</button>
+  </div>
+  <div id="content"><div id="screen" class="page"></div></div>
+</div>
+
+<!-- ===================== MODAL ===================== -->
+<div class="overlay" id="modalOverlay">
+  <div class="modal">
+    <header id="modalTitle">Título</header>
+    <div class="body" id="modalBody"></div>
+    <footer id="modalFoot"></footer>
+  </div>
+</div>
+
+<!-- ===================== BUSCA GLOBAL ===================== -->
+<div class="overlay" id="searchOverlay">
+  <div class="modal">
+    <header>Busca global</header>
+    <div class="body">
+      <input id="searchInput" placeholder="Ticket, placa, cliente, mensalista…">
+      <div id="searchResults" style="margin-top:10px; max-height:300px; overflow:auto"></div>
+    </div>
+    <footer><button class="ghost" onclick="closeSearch()">Fechar <span class="kbd">Esc</span></button></footer>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<!-- ===================== IMPRESSÃO ===================== -->
+<div class="overlay" id="printOverlay">
+  <div class="modal">
+    <header id="printTitle">Imprimir</header>
+    <div class="body">
+      <div class="card-title" style="margin-bottom:6px">Selecione a impressora</div>
+      <div class="plist" id="pList"></div>
+      <div class="psim" id="pSim" onclick="pickSim()">
+        <input type="radio" name="printer" id="pSimRadio" onchange="pickSim()">
+        <span>
+          <b>Não imprimir (modo simulado)</b>
+          <span class="hint" style="display:block">Gera o comprovante sem enviar à impressora
+            — equivale a <code>printer_name</code> vazio no sistema.</span>
+        </span>
+      </div>
+      <div class="wsel">
+        <span class="stat-label">Largura do papel</span>
+        <select id="pWidth" onchange="M.settingsWidth=+this.value"></select>
+        <span class="hint" id="pDpi"></span>
+      </div>
+      <div class="card-title" style="margin:14px 0 6px">Pré-visualização</div>
+      <div class="ticketbox">
+        <div class="receipt" id="pPreview"></div>
+        <div class="tkcodes" id="pCodes"></div>
+      </div>
+      <div class="payload" id="pPayload"></div>
+    </div>
+    <footer>
+      <button class="ghost" onclick="closePrint()">Cancelar</button>
+      <button class="primary" id="pOk" onclick="doPrint()">🖨 Imprimir</button>
+    </footer>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   DADOS MOCK
+   ========================================================== */
+const M = {
+  sectors:[
+    {name:'A', spaces:['A-01','A-02','A-03','A-04','A-05','A-06','A-07','A-08']},
+    {name:'B', spaces:['B-01','B-02','B-03','B-04','B-05','B-06']},
+    {name:'C', spaces:['C-01','C-02','C-03','C-04']},
+  ],
+  spotState:{
+    'A-01':'OCUPADA','A-02':'LIVRE','A-03':'LIVRE','A-04':'RESERVADA','A-05':'OCUPADA','A-06':'LIVRE','A-07':'BLOQUEADA','A-08':'LIVRE',
+    'B-01':'LIVRE','B-02':'OCUPADA','B-03':'LIVRE','B-04':'MANUTENCAO','B-05':'LIVRE','B-06':'OCUPADA',
+    'C-01':'LIVRE','C-02':'LIVRE','C-03':'RESERVADA','C-04':'LIVRE',
+  },
+  ticketsAtivos:[
+    ['T-20260929-0041','ABC1D23','29/09 07:12','A-01','2h18'],
+    ['T-20260929-0042','XYZ9K88','29/09 07:40','B-02','1h50'],
+    ['T-20260929-0043','QWE4R56','29/09 08:05','A-05','1h25'],
+    ['T-20260929-0044','RTY7U89','29/09 08:22','B-06','1h08'],
+  ],
+  ticketsHist:[
+    ['T-20260928-0031','HJK2L34','28/09 18:02','28/09 19:10','R$ 18,00','PAGO'],
+    ['T-20260928-0032','MNB5V67','28/09 19:40','28/09 21:05','R$ 25,00','PAGO'],
+    ['T-20260928-0033','POI9H12','28/09 21:30','28/09 22:00','R$ 12,00','CANCELADO'],
+  ],
+  customers:[
+    ['1','Maria Souza','(11) 98877-1234','maria@email.com','2','ATIVO'],
+    ['2','João Pereira','(11) 97766-2222','joao@email.com','1','ATIVO'],
+    ['3','Ana Costa','(11) 96655-3333','ana@email.com','3','ATIVO'],
+    ['4','Carlos Lima','(11) 95544-4444','carlos@email.com','0','INATIVO'],
+  ],
+  vehicles:{
+    '1':[['V-001','ABC1D23','Sedan','2022','#111111'],['V-002','XYZ9K88','Hatch','2021','#222222']],
+    '2':[['V-003','QWE4R56','SUV','2023','#333333']],
+    '3':[['V-004','RTY7U89','Pickup','2020','#444444'],['V-005','MNB5V67','Moto','2022','#555555'],['V-006','POI9H12','Hatch','2019','#666666']],
+    '4':[],
+  },
+  monthly:[
+    ['1','Maria Souza','ABC1D23','Plano Mensal','R$ 220,00','29/10/2026','ATIVO'],
+    ['2','João Pereira','QWE4R56','Plano Mensal','R$ 220,00','05/10/2026','ATIVO'],
+    ['3','Ana Costa','RTY7U89','Plano Mensal','R$ 180,00','12/09/2026','INADIMPLENTE'],
+    ['4','Carlos Lima','POI9H12','Plano Mensal','R$ 220,00','20/09/2026','INADIMPLENTE'],
+  ],
+  pendingPay:[
+    ['Ana Costa','RTY7U89','R$ 180,00','12/09/2026'],
+    ['Carlos Lima','POI9H12','R$ 220,00','20/09/2026'],
+  ],
+  cashMoves:[
+    ['29/09 08:30','#1','Abertura de caixa','—','R$ 500,00','—'],
+    ['29/09 09:12','#1','Venda ticket','T-20260929-0041','—','R$ 18,00'],
+    ['29/09 10:02','#1','Venda ticket','T-20260929-0042','—','R$ 25,00'],
+    ['29/09 11:40','#1','Sangria','—','R$ 100,00','—'],
+  ],
+  audit:[
+    ['29/09 11:40:02','admin','MENSALISTA_ALTERADO','monthly_customer','3','Alterou plano'],
+    ['29/09 10:15:44','admin','CAIXA_ABERTO','cash_register','1','Fundo R$ 500,00'],
+    ['29/09 09:12:31','admin','TICKET_EMITIDO','ticket','T-20260929-0041','Vaga A-01'],
+    ['28/09 19:10:00','operador','TICKET_FINALIZADO','ticket','T-20260928-0031','R$ 18,00'],
+  ],
+  /* espelha win32print.EnumPrinters(PRINTER_ENUM_LOCAL) */
+  printers:[
+    {name:'Epson TM-T20III',      loc:'USB001',  widths:[58,80], def:true,  dpi:'203 dpi'},
+    {name:'Zebra ZD421',          loc:'Rede 192.168.0.45', widths:[58,80,104], dpi:'300 dpi'},
+    {name:'Impressora padrão do Windows', loc:'LOCAL', widths:[58,80], dpi:'600 dpi'},
+    {name:'Microsoft Print to PDF', loc:'Arquivo', widths:[58,80], dpi:'600 dpi'},
+  ],
+  settingsPrinter:'Epson TM-T20III',
+  settingsWidth:58,
+};
+
+const money = c => 'R$ ' + (c/100).toLocaleString('pt-BR',{minimumFractionDigits:2});
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ==========================================================
+   RENDER — telas
+   ========================================================== */
+const S = {};
+
+S.dashboard = () => {
+  const cards = [
+    ['Veículos agora','12',   'var(--primary)','tickets ativos'],
+    ['Entradas hoje','48',    'var(--success)'],
+    ['Saídas hoje','36',     'var(--info)'],
+    ['Faturamento hoje','R$ 1.284,00','var(--success)'],
+    ['Receita do mês','R$ 38.420,00','var(--primary)'],
+    ['Ticket médio','R$ 17,80','var(--warning)'],
+    ['Mensalistas ativos','142','var(--primary)','planos'],
+    ['Inadimplentes','9',     'var(--danger)','bloqueiam na entrada'],
+    ['Vencendo em 7 dias','6','var(--warning)'],
+  ];
+  const pays = [['💵 Dinheiro','780,00','32x'],['⚡ Pix','320,00','18x'],['💳 Crédito','184,00','9x']];
+  const peaks = [['07h',18],['08h',14],['09h',9],['10h',7],['12h',11],['18h',16]];
+
+  return `
+  <div class="page-header">
+    <div><div class="page-title">Dashboard</div>
+    <div class="page-sub">Visão geral em ${new Date().toLocaleString('pt-BR')}</div></div>
+  </div>
+  <div class="grid3">
+    ${cards.map(c=>`<div class="statcard">
+      <div class="stat-value" style="color:${c[2]}">${c[1]}</div>
+      <div class="stat-label">${c[0]}</div>
+      ${c[3]?`<div class="stat-sub">${c[3]}</div>`:''}
+    </div>`).join('')}
+  </div>
+  <div class="row2">
+    <div class="card">
+      <div class="card-title">Ocupação das vagas</div>
+      <div class="occ-value">67%</div>
+      <div class="progress" style="margin:8px 0"><i style="width:67%"></i></div>
+      <div class="page-sub">12 ocupadas • 4 livres • 2 reservadas de 18 no total</div>
+    </div>
+    <div class="card">
+      <div class="card-title">Pagamentos de hoje</div>
+      ${pays.map(p=>`<div class="payrow"><span class="stat-label">${p[0]}</span>
+        <span class="n">${p[1]}</span><span class="q">${p[2]}</span></div>`).join('')}
+    </div>
+    <div class="card">
+      <div class="card-title">Horários de pico (entradas)</div>
+      ${peaks.map(p=>`<div class="peakrow"><span class="h">${p[0]}</span>
+        <div class="progress"><i style="width:${p[1]/18*100}%"></i></div>
+        <span class="c">${p[1]}</span></div>`).join('')}
+    </div>
+  </div>
+  <div class="actions" style="margin:0">
+    <button class="primary" onclick="go('entry')">➕ Nova Entrada</button>
+    <button class="primary" onclick="go('exit')">💰 Nova Saída</button>
+  </div>`;
+};
+
+S.entry = () => `
+  <div class="page-header"><div><div class="page-title">Nova Entrada</div>
+    <div class="page-sub">Registrar veículo e liberar a vaga</div></div>
+    <div class="actions"><span class="chip green">● Caixa #1 aberto</span></div></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Dados do veículo</div>
+      <div class="form2">
+        <label class="field"><span>Placa *</span><input id="ePlate" placeholder="ABC1D23" style="text-transform:uppercase"></label>
+        <label class="field"><span>Modelo</span><input placeholder="Ex.: HB20"></label>
+        <label class="field"><span>Cor</span><input placeholder="Ex.: Prata"></label>
+        <label class="field"><span>Categoria</span><select><option>Automovel</option><option>Moto</option><option>Caminhonete</option></select></label>
+        <label class="field"><span>Cliente (opcional)</span><select><option>— avulso —</option>${M.customers.map(c=>`<option>${c[1]}</option>`).join('')}</select></label>
+        <label class="field"><span>Mensalista</span><select><option>— não —</option>${M.monthly.filter(m=>m[6]==='ATIVO').map(m=>`<option>${m[1]}</option>`).join('')}</select></label>
+      </div>
+      <div class="actions" style="margin:14px 0 0">
+        <button class="primary" onclick="entrySave()">Confirmar entrada <span class="kbd">F2</span></button>
+        <button class="ghost" onclick="toast('Entrada cancelada')">Cancelar</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Vaga disponível</div>
+      <div class="map-grid" id="entryMap"></div>
+    </div>
+  </div>`;
+
+S.exit = () => `
+  <div class="page-header"><div><div class="page-title">Nova Saída</div>
+    <div class="page-sub">Localizar ticket, calcular e receber</div></div></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Buscar ticket</div>
+      <label class="field"><span>Placa ou nº do ticket</span><input id="xSearch" placeholder="ABC1D23 ou T-2026..."></label>
+      <div class="warnbox">Ticket <b>T-20260929-0041</b> — placa <b>ABC1D23</b> — vaga <b>A-01</b> — permanência <b>2h18</b></div>
+      <div class="grid4" style="margin:0">
+        <div class="statcard"><div class="stat-value" style="color:var(--primary);font-size:18px">R$ 18,00</div><div class="stat-label">Total</div></div>
+        <div class="statcard"><div class="stat-value" style="color:var(--success);font-size:18px">R$ 0,00</div><div class="stat-label">Desconto</div></div>
+        <div class="statcard"><div class="stat-value" style="color:var(--warning);font-size:18px">R$ 5,00</div><div class="stat-label">Multa</div></div>
+        <div class="statcard"><div class="stat-value" style="color:var(--info);font-size:18px">2h18</div><div class="stat-label">Permanência</div></div>
+      </div>
+      <label class="field" style="margin-top:12px"><span>Forma de pagamento</span>
+        <select><option>💵 Dinheiro</option><option>⚡ Pix</option><option>💳 Crédito</option><option>💳 Débito</option></select></label>
+      <div class="actions" style="margin:0">
+        <button class="success" onclick="toast('Saída finalizada — R$ 18,00','ok')">Finalizar e pagar <span class="kbd">F3</span></button>
+        <button class="ghost" onclick="toast('Ticket perdido marcado')">Ticket perdido</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">Resumo do fechamento</div>
+      <div class="payrow"><span class="stat-label">Pagamentos hoje</span><span class="n">59</span></div>
+      <div class="payrow"><span class="stat-label">Tickets em aberto</span><span class="n">12</span></div>
+      <div class="payrow"><span class="stat-label">Faturamento</span><span class="n">R$ 1.284,00</span></div>
+    </div>
+  </div>`;
+
+S.map = () => {
+  const legend = [['LIVRE','Livre'],['OCUPADA','Ocupada'],['RESERVADA','Reservada'],['BLOQUEADA','Bloqueada'],['MANUTENCAO','Manutenção']];
+  const COLOR = {LIVRE:'var(--success)',OCUPADA:'var(--danger)',RESERVADA:'var(--warning)',BLOQUEADA:'#64748B',MANUTENCAO:'#A855F7'};
+  const counts = {};
+  M.sectors.forEach(s => s.spaces.forEach(sp => { const st = M.spotState[sp]||'LIVRE'; counts[st]=(counts[st]||0)+1; }));
+  const total = M.sectors.reduce((a,s)=>a+s.spaces.length,0);
+
+  return `
+  <div class="page-header">
+    <div><div class="page-title">Mapa de Vagas</div>
+    <div class="page-sub">${M.sectors.length} setor(es) • ${total} vaga(s) — clique numa vaga para ver detalhes</div></div>
+    <div class="actions">
+      <button class="ghost" onclick="toast('Mapa atualizado','ok')">🔄 Atualizar</button>
+      <button class="ghost" onclick="setorAdd()">+ Setor</button>
+      <button class="primary" onclick="vagaAdd()">+ Vaga</button>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div class="legend" style="margin-bottom:12px">
+      ${legend.map(l=>`<span class="chip" style="color:${COLOR[l[0]]}">● ${l[1]}</span>`).join('')}
+    </div>
+    <div class="sectools">
+      ${legend.map(l=>`<span class="statchip"><i class="dot" style="background:${COLOR[l[0]]}"></i>${l[1]}<b>${counts[l[0]]||0}</b></span>`).join('')}
+    </div>
+  </div>
+
+  ${M.sectors.length ? M.sectors.map((s,si)=>`
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title bar">
+        <span>Setor ${esc(s.name)} — ${s.spaces.length} vaga(s)</span>
+        <span class="tools">
+          <button class="ghost" onclick="setorRename(${si})">✎ Renomear</button>
+          <button class="ghost" onclick="vagaAdd(${si})">+ Vaga</button>
+          <button class="danger" onclick="setorDel(${si})">Remover setor</button>
+        </span>
+      </div>
+      ${s.spaces.length
+        ? `<div class="map-grid">
+            ${s.spaces.map(sp=>{
+              const st = M.spotState[sp]||'LIVRE';
+              return `<div class="spot s-${st}" onclick="spotInfo('${esc(sp)}','${st}')">
+                ${esc(sp)}<small>${st[0]+st.slice(1).toLowerCase()}</small>
+                <span class="rm" title="Remover vaga" onclick="event.stopPropagation();vagaDel('${esc(sp)}')">×</span>
+              </div>`;
+            }).join('')}
+           </div>`
+        : `<div class="empty">Nenhuma vaga neste setor. <b>Adicionar vaga</b></div>`}
+    </div>`).join('')
+  : `<div class="card"><div class="empty">Nenhum setor cadastrado.<br>Use <b>+ Setor</b> para começar.</div></div>`}`;
+};
+
+S.tickets = () => `
+  <div class="page-header"><div><div class="page-title">Tickets</div>
+    <div class="page-sub">Presentes e histórico</div></div>
+    <div class="actions">
+      <button class="ghost" onclick="verTicket()">🎫 Ver ticket</button>
+      <button class="ghost" onclick="reprint()">⟳ Reimprimir ticket</button>
+      <button class="ghost">🔄 Atualizar</button>
+    </div></div>
+  <div class="tabs">
+    <div class="tab active" onclick="tab(this,'tabPresentes')">Presentes (4)</div>
+    <div class="tab" onclick="tab(this,'tabHistorico')">Histórico</div>
+  </div>
+  <div class="card" id="tabPresentes" style="padding:0;overflow:hidden">
+    <table><thead><tr>${['Ticket','Placa','Entrada','Vaga','Tempo'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${M.ticketsAtivos.map((r,i)=>`<tr onclick="sel(this)">${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  </div>
+  <div class="card" id="tabHistorico" style="padding:0;overflow:hidden;display:none">
+    <table><thead><tr>${['Ticket','Placa','Entrada','Saída','Valor','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${M.ticketsHist.map(r=>`<tr onclick="sel(this)">${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  </div>`;
+
+/* ---- Recurso 1: Mensalistas com Alterar/Excluir ---- */
+S.monthly = () => `
+  <div class="page-header"><div><div class="page-title">Mensalistas</div>
+    <div class="page-sub">Planos, mensalidades e bloqueios</div></div></div>
+  <div class="actions" style="margin-bottom:12px">
+    <button class="primary" onclick="mNew()">+ Novo Mensalista</button>
+    <button class="success" onclick="mPay()">Receber mensalidade</button>
+    <button class="ghost" onclick="toast('Renovação processada','ok')">Renovar</button>
+    <button class="ghost" onclick="toast('Bloqueios reavaliados','ok')">Reavaliar bloqueios</button>
+    <button class="ghost" onclick="mEdit()">Alterar</button>
+    <button class="danger" onclick="mDel()">Excluir</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:12px">
+    <table><thead><tr>${['#','Cliente','Placa','Plano','Mensalidade','Vencimento','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${M.monthly.map(r=>`<tr onclick="sel(this)">${r.map((c,i)=>`<td>${i===6?`<span class="chip ${c==='ATIVO'?'green':''}">${c}</span>`:c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  </div>
+  <div class="card">
+    <div class="card-title">Mensalidades pendentes (${M.pendingPay.length})</div>
+    ${M.pendingPay.length? M.pendingPay.map(p=>`
+      <div class="payrow"><span class="stat-label">${p[0]} — ${p[1]}</span>
+      <span class="q">venceu ${p[3]}</span>
+      <span class="n">${p[2]}</span>
+      <button class="success" onclick="mPayOne('${p[0]}')">Receber</button></div>`).join('')
+      : '<div class="page-sub">Nenhuma pendência.</div>'}
+  </div>`;
+
+/* ---- Recurso 2: Clientes + Veículos ---- */
+S.customers = () => `
+  <div class="page-header"><div><div class="page-title">Clientes</div>
+    <div class="page-sub">Cadastro, veículos e histórico</div></div></div>
+  <div class="actions" style="margin-bottom:12px">
+    <button class="primary" onclick="cNew()">+ Novo Cliente</button>
+    <button class="ghost" onclick="cEdit()">Alterar Cliente</button>
+    <button class="danger" onclick="cDel()">Excluir Cliente</button>
+    <button class="ghost" onclick="cVeh()">Veículos</button>
+  </div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table><thead><tr>${['#','Nome','Telefone','E-mail','Veículos','Status'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${M.customers.map(r=>`<tr onclick="sel(this)">${r.map((c,i)=>`<td>${i===5?`<span class="chip ${c==='ATIVO'?'green':''}">${c}</span>`:c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  </div>`;
+
+S.cash = () => {
+  const st = 'ABERTO';
+  return `
+  <div class="page-header"><div><div class="page-title">Caixa</div>
+    <div class="page-sub">Registro #1 — turno atual</div></div>
+    <div class="actions">
+      <button class="ghost">🔄 Atualizar</button>
+      <button class="primary">Nova Sangria</button>
+      <button class="success">Nova Entrada de Dinheiro</button>
+      <button class="danger">Fechar Caixa</button>
+    </div></div>
+  <div class="grid4">
+    <div class="statcard">
+      <div class="stat-value" style="color:var(--success)">R$ 1.284,00</div>
+      <div class="stat-label">Mostrador (total vendido)</div>
+    </div>
+    <div class="statcard">
+      <div class="stat-value" style="color:var(--primary)">R$ 2.345,00</div>
+      <div class="stat-label">Fundo em caixa</div>
+    </div>
+    <div class="statcard">
+      <div class="stat-value" style="color:var(--warning)">R$ 100,00</div>
+      <div class="stat-label">Sangrias</div>
+    </div>
+    <div class="statcard">
+      <!-- fix Recurso 4: padding para a bolinha não ser cortada -->
+      <span class="chip green" style="padding:12px 16px 6px 8px">● ${st}</span>
+      <div class="stat-label" style="margin-top:6px">Estado do caixa</div>
+    </div>
+  </div>
+  <div class="tabs"><div class="tab active">Movimentações</div><div class="tab">Por forma de pagamento</div></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table><thead><tr>${['Data','Caixa','Tipo','Ref.','Saída','Entrada'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${M.cashMoves.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  </div>`;
+};
+
+S.reports = () => `
+  <div class="page-header"><div><div class="page-title">Relatórios</div>
+    <div class="page-sub">Faturamento, ocupação e mensalistas</div></div>
+    <div class="actions">
+      <button class="ghost">📅 Período: mês atual</button>
+      <button class="primary">⬇ Exportar CSV</button>
+    </div></div>
+  <div class="grid4">
+    <div class="statcard"><div class="stat-value" style="color:var(--success)">R$ 38.420,00</div><div class="stat-label">Faturamento do mês</div></div>
+    <div class="statcard"><div class="stat-value" style="color:var(--primary)">1.842</div><div class="stat-label">Tickets emitidos</div></div>
+    <div class="statcard"><div class="stat-value" style="color:var(--info)">2h04</div><div class="stat-label">Permanência média</div></div>
+    <div class="statcard"><div class="stat-value" style="color:var(--warning)">67%</div><div class="stat-label">Ocupação média</div></div>
+  </div>
+  <div class="card">
+    <div class="card-title">Faturamento por dia (últimos 7 dias)</div>
+    ${[1420,1180,1610,990,1350,2240,1284].map((v,i)=>`
+      <div class="peakrow"><span class="h">${22+i}/09</span>
+      <div class="progress"><i style="width:${v/2240*100}%"></i></div>
+      <span class="c">${money(v*100)}</span></div>`).join('')}
+  </div>`;
+
+S.settings = () => `
+  <div class="page-header"><div><div class="page-title">Configurações</div>
+    <div class="page-sub">Preferências do sistema</div></div>
+    <div class="actions"><button class="primary" onclick="toast('Configurações salvas','ok')">Salvar</button></div></div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Geral</div>
+      <label class="field"><span>Nome do estacionamento</span><input value="MasterPark Center"></label>
+      <label class="field"><span>Tempo de tolerância (min)</span><input type="number" value="10"></label>
+      <label class="field"><span>Valor da multa (R$)</span><input type="number" value="5.00"></label>
+    </div>
+    <div class="card">
+      <div class="card-title">Aparência</div>
+      <label class="field"><span>Tema</span><select onchange="setTheme(this.value)">
+        <option value="light">Claro</option><option value="dark">Escuro</option></select></label>
+      <div class="warnbox">Licença ativa até 31/12/2026 — 4 dispositivos.</div>
+    </div>
+  </div>`;
+
+S.health = () => `
+  <div class="page-header"><div><div class="page-title">Saúde do Sistema</div>
+    <div class="page-sub">Diagnóstico e integridade</div></div>
+    <div class="actions"><button class="primary" onclick="toast('Backup gerado','ok')">Gerar backup</button></div></div>
+  <div class="grid3">
+    ${[['Banco de dados','OK','var(--success)'],['Espaço em disco','OK','var(--success)'],
+       ['Impressora','OK','var(--success)'],['Backup automático','2h atrás','var(--success)'],
+       ['Licença','Válida','var(--success)'],['Atualizações','1 disponível','var(--warning)']]
+      .map(c=>`<div class="statcard"><div class="stat-value" style="color:${c[2]};font-size:18px">${c[1]}</div>
+      <div class="stat-label">${c[0]}</div></div>`).join('')}
+  </div>
+  <div class="card"><div class="card-title">Backup recente</div>
+    <table><thead><tr>${['Arquivo','Tamanho','Data'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody><tr><td>masterpark_20260929.db</td><td>18,4 MB</td><td>29/09 09:00</td></tr></tbody></table></div>`;
+
+S.audit = () => `
+  <div class="page-header"><div><div class="page-title">Auditoria</div>
+    <div class="page-sub">Trilha de ações do sistema</div></div>
+    <div class="actions"><button class="ghost">⬇ Exportar</button></div></div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <table><thead><tr>${['Data/hora','Usuário','Ação','Entidade','ID','Detalhe'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+    <tbody>${M.audit.map(r=>`<tr>${r.map(c=>`<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table>
+  </div>`;
+
+/* ==========================================================
+   NAV
+   ========================================================== */
+let current = 'dashboard';
+function go(k){ current = k; render(); document.getElementById('content').scrollTop = 0; }
+function render(){
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.toggle('active', n.dataset.k===current));
+  document.getElementById('screen').innerHTML = (S[current]||S.dashboard)();
+  if(current==='entry') renderEntryMap();
+}
+document.querySelectorAll('.nav-item').forEach(n=> n.onclick = ()=>go(n.dataset.k));
+
+function renderEntryMap(){
+  const box = document.getElementById('entryMap'); if(!box) return;
+  box.innerHTML = M.sectors[0].spaces.filter(sp=>M.spotState[sp]==='LIVRE').slice(0,8)
+    .map(sp=>`<div class="spot s-LIVRE" onclick="spotInfo('${sp}','LIVRE')">${sp}<small>Vaga livre</small></div>`).join('');
+}
+function sel(tr){ tr.parentElement.querySelectorAll('tr').forEach(r=>r.classList.remove('selected')); tr.classList.add('selected'); }
+function tab(el, target){
+  el.parentElement.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['tabPresentes','tabHistorico'].forEach(id=>document.getElementById(id).style.display = id===target?'':'none');
+}
+function setTheme(t){ document.documentElement.dataset.theme = t; }
+document.getElementById('btnTheme').onclick = ()=> setTheme(document.documentElement.dataset.theme==='dark'?'light':'dark');
+document.getElementById('btnCash').onclick = ()=> go('cash');
+document.getElementById('btnLogout').onclick = ()=> toast('Sessão encerrada');
+
+/* ==========================================================
+   MODAL / TOAST
+   ========================================================== */
+const OVL = document.getElementById('modalOverlay');
+function modal(title, body, buttons){
+  document.getElementById('modalTitle').textContent = title;
+  document.getElementById('modalBody').innerHTML = body;
+  document.getElementById('modalFoot').innerHTML = buttons;
+  OVL.classList.add('open');
+}
+function closeModal(){ OVL.classList.remove('open'); }
+OVL.onclick = e => { if(e.target===OVL) closeModal(); };
+
+let tT;
+function toast(msg, kind){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show ' + (kind||'');
+  clearTimeout(tT); tT = setTimeout(()=>t.className='', 2600);
+}
+function confirmModal(title, text, okLabel, onOk){
+  modal(title, `<div>${text}</div>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button>
+     <button class="danger" id="okBtn">${okLabel}</button>`);
+  document.getElementById('okBtn').onclick = ()=>{ closeModal(); onOk(); };
+}
+const needSel = msg => { toast(msg,'err'); return false; };
+const getSel = () => {
+  const tr = document.querySelector('tr.selected');
+  return tr ? [...tr.children].map(td=>td.textContent.trim()) : null;
+};
+
+/* ===================== AÇÕES (recursos) ===================== */
+function spotInfo(sp, st){ toast(`Vaga ${sp} — ${st}`); }
+
+function entrySave(){
+  const p = document.getElementById('ePlate').value.trim().toUpperCase();
+  if(!p){ toast('Informe a placa','err'); return; }
+  toast(`Entrada registrada — ${p}`,'ok'); go('map');
+}
+
+/* ---- Sobre o Sistema ---- */
+S.about = () => `
+  <div class="page-header">
+    <div><div class="page-title">Sobre o Sistema</div>
+    <div class="page-sub">MasterPark — Sistema de Gestão de Estacionamentos</div></div>
+    <div class="actions"><button class="ghost" onclick="toast('Licença ativa até 31/12/2026','ok')">🔑 Licença</button></div>
+  </div>
+
+  <div class="card" style="margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <div style="width:66px;height:66px;border-radius:16px;background:var(--primary);color:#fff;
+        display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;flex:0 0 66px">M</div>
+      <div style="flex:1;min-width:240px">
+        <div class="stat-value" style="color:var(--primary);font-size:22px">M A S T E R P A R K</div>
+        <div class="stat-label">Gestão de Estacionamentos</div>
+        <div class="hint" style="margin-top:6px">
+          <span class="chip">v1.0.0</span>
+          <span class="chip green" style="margin-left:6px">● Estável</span>
+          <span class="chip" style="margin-left:6px">Desktop · Windows</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="grid2" style="margin-bottom:12px">
+    <div class="card">
+      <div class="card-title">O que é o MasterPark</div>
+      <p style="line-height:1.6">
+        O <b>MasterPark</b> é um sistema completo de gestão de estacionamentos, feito para
+        substituir o controle manual de um pátio por um processo automatizado, auditável e
+        em tempo real.
+      </p>
+      <p style="line-height:1.6;margin-top:8px">
+        Ele cobre o ciclo completo da operação — da <b>entrada</b> do veículo à <b>saída</b> com
+        pagamento, incluindo <b>mensalistas</b>, <b>controle de caixa</b> e
+        <b>relatórios gerenciais</b> — com acesso por nível de permissão e trilha de auditoria
+        de todas as ações.
+      </p>
+      <div class="warnbox" style="margin-top:12px">
+        <b>Objetivo:</b> reduzir erro de digitação, eliminar filas na portaria e dar ao gestor
+        os números do negócio em um relance.
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Autor e créditos</div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div style="width:58px;height:58px;border-radius:50%;background:var(--primary);color:#fff;
+          display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:800;flex:0 0 58px">FP</div>
+        <div>
+          <div class="stat-value" style="font-size:18px">Flaviano Porto</div>
+          <div class="stat-label">Criador e desenvolvedor do MasterPark</div>
+          <div class="hint" style="margin-top:4px">Conceito, arquitetura, banco de dados e interface.</div>
+        </div>
+      </div>
+      <table style="margin-top:14px">
+        <tbody>
+          <tr><td><b>Projeto</b></td><td>MasterPark</td></tr>
+          <tr><td><b>Autor</b></td><td>Flaviano Porto</td></tr>
+          <tr><td><b>Categoria</b></td><td>Gestão de estacionamentos</td></tr>
+          <tr><td><b>Versão</b></td><td>1.0.0</td></tr>
+          <tr><td><b>Plataforma</b></td><td>Windows (escritório)</td></tr>
+          <tr><td><b>Licença</b></td><td>Proprietária — válida até 31/12/2026</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Funcionalidades</div>
+      ${[
+        ['🅿','Operação de entrada e saída de veículos'],
+        ['🗺','Mapa de vagas com estados em tempo real'],
+        ['🎫','Tickets e reimpressão de comprovantes'],
+        ['🗓','Mensalistas, mensalidades e bloqueios'],
+        ['👤','Cadastro de clientes e veículos'],
+        ['🧾','Caixa, sangrias e fechamento de turno'],
+        ['📈','Dashboard, relatórios e exportação'],
+        ['🛡','Perfis de acesso e auditoria completa'],
+      ].map(f=>`<div class="payrow"><span>${f[0]}</span><span class="stat-label">${f[1]}</span></div>`).join('')}
+    </div>
+
+    <div class="card">
+      <div class="card-title">Tecnologias utilizadas</div>
+      <table>
+        <tbody>
+          <tr><td><b>Interface</b></td><td>Python + PySide6 (Qt 6)</td></tr>
+          <tr><td><b>Banco de dados</b></td><td>SQLite (arquivo único, portátil)</td></tr>
+          <tr><td><b>Camadas</b></td><td>UI · Services · Repositories · Domain</td></tr>
+          <tr><td><b>Impressão</b></td><td>Escopos ESC/POS e texto</td></tr>
+          <tr><td><b>Segurança</b></td><td>PBKDF2 + perfis de permissão</td></tr>
+          <tr><td><b>Backup</b></td><td>Automático e manual</td></tr>
+        </tbody>
+      </table>
+      <div class="card-title" style="margin-top:14px">Atalhos de teclado</div>
+      <div class="hint" style="display:flex;flex-wrap:wrap;gap:6px">
+        <span class="kbd">F2</span> Entrada · <span class="kbd">F3</span> Saída ·
+        <span class="kbd">F4</span> Tickets · <span class="kbd">F5</span> Caixa ·
+        <span class="kbd">F6</span> Mensalistas · <span class="kbd">F7</span> Clientes ·
+        <span class="kbd">F9</span> Relatórios · <span class="kbd">Ctrl+K</span> Busca
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:12px;text-align:center;color:var(--muted)">
+    © 2026 <b style="color:var(--text)">Flaviano Porto</b> — MasterPark. Todos os direitos reservados.
+  </div>`;
+
+/* ===================== MAPA: setores e vagas ===================== */
+const SECT_LETTERS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+function setorExists(name){
+  return M.sectors.some(s => s.name.toUpperCase() === name.toUpperCase());
+}
+function vagaExists(code){
+  return M.sectors.some(s => s.spaces.includes(code));
+}
+function nextSetorLetter(){
+  return SECT_LETTERS.split('').find(c => !setorExists(c)) || ('S' + (M.sectors.length + 1));
+}
+function setorAdd(){
+  const dft = nextSetorLetter();
+  modal('Adicionar setor', `
+    <label class="field"><span>Nome do setor *</span>
+      <input id="stName" value="${esc(dft)}" maxlength="6" placeholder="Ex.: ${esc(dft)}" style="text-transform:uppercase"></label>
+    <div class="hint">Sugestão: <b>${esc(dft)}</b> (primeira letra livre).</div>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button>
+     <button class="primary" onclick="setorSave()">Adicionar setor</button>`);
+  const inp = document.getElementById('stName');
+  inp.focus(); inp.select();
+}
+function setorSave(){
+  const n = document.getElementById('stName').value.trim().toUpperCase();
+  if(!n) return toast('Informe o nome do setor','err');
+  if(setorExists(n)) return toast(`O setor ${n} já existe`,'err');
+  M.sectors.push({name:n, spaces:[]});
+  closeModal(); render();
+  toast(`Setor ${n} criado`,'ok');
+}
+function setorRename(si){
+  const s = M.sectors[si];
+  modal('Renomear setor '+esc(s.name), `
+    <label class="field"><span>Nome do setor *</span>
+      <input id="stRename" value="${esc(s.name)}" maxlength="6" style="text-transform:uppercase"></label>
+    <div class="hint">Os códigos das vagas (${s.spaces.slice(0,4).join(', ') || '—'}${s.spaces.length>4?'…':''}) serão renomeados junto.</div>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button>
+     <button class="primary" onclick="setorRenameSave(${si})">Salvar</button>`);
+}
+function setorRenameSave(si){
+  const s = M.sectors[si];
+  const n = document.getElementById('stRename').value.trim().toUpperCase();
+  if(!n) return toast('Informe o nome do setor','err');
+  if(n !== s.name && setorExists(n)) return toast(`O setor ${n} já existe`,'err');
+  const old = s.name;
+  if(n !== old){
+    s.spaces.forEach(sp => {
+      const st = M.spotState[sp];
+      delete M.spotState[sp];
+      const code = n + '-' + sp.split('-').slice(1).join('-');
+      s.spaces[s.spaces.indexOf(sp)] = code;
+      M.spotState[code] = st || 'LIVRE';
+    });
+    s.name = n;
+  }
+  closeModal(); render();
+  toast(`Setor ${old} renomeado para ${n}`,'ok');
+}
+function setorDel(si){
+  const s = M.sectors[si];
+  const extra = s.spaces.length
+    ? `<div class="warnbox" style="margin-top:10px">⚠️ As <b>${s.spaces.length}</b> vaga(s) deste setor
+        (<b>${s.spaces.join(', ')}</b>) serão removidas junto com seus estados.</div>` : '';
+  confirmModal('Remover setor '+esc(s.name),
+    `Remover o setor <b>${esc(s.name)}</b>?${extra}
+     <br><span class="hint">A ação fica registrada na auditoria (SETOR_REMOVIDO). Em produção, setores
+     com tickets vinculados não podem ser removidos.</span>`,
+    'Remover setor', ()=>{
+      s.spaces.forEach(sp => delete M.spotState[sp]);
+      M.sectors.splice(si,1);
+      render();
+      toast(`Setor ${s.name} removido`,'ok');
+    });
+}
+function vagaAdd(si){
+  if(!M.sectors.length) return toast('Crie um setor antes de adicionar vagas','err');
+  const opts = M.sectors.map((s,i)=>`<option value="${i}" ${i===si?'selected':''}>Setor ${esc(s.name)} (${s.spaces.length})</option>`).join('');
+  const dft = M.sectors[si !== undefined ? si : 0].name + '-';
+  modal('Adicionar vaga', `
+    <label class="field"><span>Setor</span><select id="vgSect" onchange="vgSuggest()">${opts}</select></label>
+    <label class="field"><span>Código da vaga *</span>
+      <input id="vgCode" value="${esc(dft)}" placeholder="Ex.: ${esc(dft)}01" style="text-transform:uppercase"></label>
+    <label class="field"><span>Estado inicial</span>
+      <select id="vgState"><option>LIVRE</option><option>RESERVADA</option><option>BLOQUEADA</option><option>MANUTENCAO</option><option>OCUPADA</option></select></label>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button>
+     <button class="primary" onclick="vagaSave()">Adicionar vaga</button>`);
+  document.getElementById('vgCode').focus();
+}
+function vgSuggest(){
+  const s = M.sectors[+document.getElementById('vgSect').value];
+  if(s) document.getElementById('vgCode').value = s.name + '-' + String(s.spaces.length+1).padStart(2,'0');
+}
+function vagaSave(){
+  const code = document.getElementById('vgCode').value.trim().toUpperCase();
+  if(!code) return toast('Informe o código da vaga','err');
+  if(vagaExists(code)) return toast(`A vaga ${code} já existe`,'err');
+  const s = M.sectors[+document.getElementById('vgSect').value];
+  s.spaces.push(code);
+  M.spotState[code] = document.getElementById('vgState').value;
+  closeModal(); render();
+  toast(`Vaga ${code} adicionada ao setor ${s.name}`,'ok');
+}
+function vagaDel(code){
+  const si = M.sectors.findIndex(s => s.spaces.includes(code));
+  const st = M.spotState[code] || 'LIVRE';
+  const extra = (st === 'OCUPADA')
+    ? `<div class="warnbox" style="margin-top:10px">⚠️ A vaga está <b>OCUPADA</b>. Em produção a remoção seria
+        bloqueada enquanto houver ticket aberto.</div>` : '';
+  confirmModal('Remover vaga '+code,
+    `Remover a vaga <b>${code}</b> (estado atual: ${st})?${extra}
+     <br><span class="hint">A ação fica registrada na auditoria (VAGA_REMOVIDA).</span>`,
+    'Remover vaga', ()=>{
+      M.sectors[si].spaces = M.sectors[si].spaces.filter(x => x !== code);
+      delete M.spotState[code];
+      render();
+      toast(`Vaga ${code} removida`,'ok');
+    });
+}
+
+/* ==========================================================
+   QR CODE — encoder real (versões 1-4, ECC nível L), sem libs
+   ========================================================== */
+const QR_EXP=new Array(512), QR_LOG=new Array(256);
+(function(){ let x=1; for(let i=0;i<255;i++){ QR_EXP[i]=x; QR_LOG[x]=i; x<<=1; if(x&0x100) x^=0x11D; }
+  for(let i=255;i<512;i++) QR_EXP[i]=QR_EXP[i-255]; })();
+const qmul=(a,b)=> (a===0||b===0)?0:QR_EXP[QR_LOG[a]+QR_LOG[b]];
+
+function qrGenPoly(degree){
+  let g=[1];
+  for(let i=0;i<degree;i++){
+    const nx=new Array(g.length+1).fill(0);
+    for(let j=0;j<g.length;j++){ nx[j]^=g[j]; nx[j+1]^=qmul(g[j],QR_EXP[i]); }
+    g=nx;
+  }
+  return g.slice(1);                       // coeficiente 1 implícito
+}
+function qrRsRemainder(data, degree){
+  const g=qrGenPoly(degree), res=new Array(degree).fill(0);
+  for(const b of data){
+    const factor=b^res[0];
+    res.shift(); res.push(0);
+    for(let i=0;i<degree;i++) res[i]^=qmul(g[i],factor);
+  }
+  return res;
+}
+/* codewords: nível L, 1 bloco para as versões 1..4 */
+const QR_ECW={1:7,2:10,3:15,4:20}, QR_DCW={1:19,2:34,3:55,4:80};
+const QR_ALIGN={1:[],2:[6,18],3:[6,22],4:[6,26]};
+const QR_MASK=[
+  (r,c)=>(r+c)%2===0, r=>r%2===0, c=>c%3===0, (r,c)=>(r+c)%3===0,
+  (r,c)=>(((r/2)|0)+((c/3)|0))%2===0,
+  (r,c)=>((r*c)%2+(r*c)%3)===0,
+  (r,c)=>(((r*c)%2+(r*c)%3)%2)===0,
+  (r,c)=>(((r+c)%2+(r*c)%3)%2)===0,
+];
+function qrFormatBits(eclBits, mask){
+  const data=(eclBits<<3)|mask;
+  let rem=data;
+  for(let i=0;i<10;i++) rem=(rem<<1)^((rem>>>9)*0x537);
+  return ((data<<10)|rem)^0x5412;         // 15 bits
+}
+function qrMatrix(text){
+  const bytes=[]; for(let i=0;i<text.length;i++) bytes.push(text.charCodeAt(i)&0xFF);
+  let v=0;
+  for(const ver of [1,2,3,4]){
+    if(4+8+bytes.length*8 <= QR_DCW[ver]*8){ v=ver; break; }
+  }
+  if(!v){                                   // payload longo: trunca p/ caber na v4
+    const max=QR_DCW[4]-3;
+    bytes.length=Math.min(bytes.length,max);
+    v=4;
+  }
+  const cap=QR_DCW[v]*8, bits=[];
+  const put=(val,len)=>{ for(let i=len-1;i>=0;i--) bits.push((val>>>i)&1); };
+  put(0b0100,4); put(bytes.length,8);       // modo byte + contagem
+  bytes.forEach(b=>put(b,8));
+  for(let i=0;i<Math.min(4, cap-bits.length);i++) bits.push(0);   // terminador
+  while(bits.length%8) bits.push(0);
+  const words=[];
+  for(let i=0;i<bits.length;i+=8){ let w=0; for(let j=0;j<8;j++) w=(w<<1)|bits[i+j]; words.push(w); }
+  const PADS=[0xEC,0x11]; let pi=0;
+  while(words.length<QR_DCW[v]) words.push(PADS[pi++%2]);
+  const all=words.concat(qrRsRemainder(words, QR_ECW[v]));
+
+  const size=17+4*v;
+  const m=Array.from({length:size},()=>new Array(size).fill(false));
+  const fn=Array.from({length:size},()=>new Array(size).fill(false));
+  const set=(r,c,d)=>{ if(r>=0&&r<size&&c>=0&&c<size){ m[r][c]=d; fn[r][c]=true; } };
+  const finder=(r0,c0)=>{
+    for(let r=-1;r<=7;r++) for(let c=-1;c<=7;c++){
+      const on=(r>=0&&r<=6&&(c===0||c===6))||(c>=0&&c<=6&&(r===0||r===6))||(r>=2&&r<=4&&c>=2&&c<=4);
+      set(r0+r,c0+c,on);
+    }
+  };
+  finder(0,0); finder(0,size-7); finder(size-7,0);
+  for(let i=8;i<size-8;i++){ set(6,i,i%2===0); set(i,6,i%2===0); }
+  const al=QR_ALIGN[v];
+  for(const ar of al) for(const ac of al){
+    if((ar===6&&ac===6)||(ar===6&&ac===size-7)||(ar===size-7&&ac===6)) continue;
+    for(let dr=-2;dr<=2;dr++) for(let dc=-2;dc<=2;dc++)
+      set(ar+dr,ac+dc, Math.max(Math.abs(dr),Math.abs(dc))!==1);
+  }
+  /* dados em zigue-zague */
+  let i=0;
+  for(let right=size-1; right>=1; right-=2){
+    if(right===6) right=5;
+    for(let vert=0; vert<size; vert++){
+      for(let j=0;j<2;j++){
+        const col=right-j;
+        const up=((right+1)&2)===0;
+        const row=up ? size-1-vert : vert;
+        if(!fn[row][col] && i<all.length*8){
+          m[row][col]=!!((all[i>>>3]>>>(7-(i&7)))&1);
+          i++;
+        }
+      }
+    }
+  }
+  /* escolhe a máscara com menor penalidade */
+  const isDark=(r,c)=>m[r][c];
+  function penalty(){
+    let p=0;
+    for(let r=0;r<size;r++){                       // regra 1: sequências
+      let run=1;
+      for(let c=1;c<size;c++){
+        if(isDark(r,c)===isDark(r,c-1)) run++;
+        else { if(run>=5) p+=3+(run-5); run=1; }
+      }
+      if(run>=5) p+=3+(run-5);
+    }
+    for(let c=0;c<size;c++){
+      let run=1;
+      for(let r=1;r<size;r++){
+        if(isDark(r,c)===isDark(r-1,c)) run++;
+        else { if(run>=5) p+=3+(run-5); run=1; }
+      }
+      if(run>=5) p+=3+(run-5);
+    }
+    for(let r=0;r<size-1;r++) for(let c=0;c<size-1;c++){   // regra 2: blocos 2x2
+      const a=isDark(r,c);
+      if(a===isDark(r,c+1)&&a===isDark(r+1,c)&&a===isDark(r+1,c+1)) p+=3;
+    }
+    const pat=[true,false,true,true,true,false,true,false,false,true];  // regra 3
+    const found=(get,len)=>{
+      for(let r=0;r<size;r++) for(let c=0;c<=size-len;c++){
+        let ok=true;
+        for(let k=0;k<len;k++){
+          const t=get(r,c+k);
+          if(t!==null && t!==pat[k]){ ok=false; break; }
+        }
+        if(ok){ const pre=c>0?get(r,c-1):null, pos=c+len<size?get(r,c+len):null;
+          if(pre===null||pre===false) p+=40; if(pos===null||pos===false) p+=40; }
+      }
+    };
+    found((r,c)=>c<size?isDark(r,c):null, 11);
+    found((r,c)=>r<size?isDark(r,c):null, 11);
+    let dark=0;                                     // regra 4: proporção
+    for(let r=0;r<size;r++) for(let c=0;c<size;c++) if(isDark(r,c)) dark++;
+    p+=Math.floor(Math.abs(dark*20-size*size*10)/(size*size))*10;
+    return p;
+  }
+  let best=0, bestP=Infinity;
+  for(let k=0;k<8;k++){
+    const save=m.map(r=>r.slice());
+    for(let r=0;r<size;r++) for(let c=0;c<size;c++) if(!fn[r][c]&&QR_MASK[k](r,c)) m[r][c]=!m[r][c];
+    const p=penalty();
+    if(p<bestP){ bestP=p; best=k; }
+    for(let r=0;r<size;r++) for(let c=0;c<size;c++) m[r][c]=save[r][c];
+  }
+  /* aplica a melhor máscara */
+  for(let r=0;r<size;r++) for(let c=0;c<size;c++) if(!fn[r][c]&&QR_MASK[best](r,c)) m[r][c]=!m[r][c];
+  /* informação de formato (cópias) */
+  const fb=qrFormatBits(1,best);                    // 01 = nível L
+  const bit=n=>!!((fb>>>(14-n))&1);
+  for(let k=0;k<=5;k++) set(k,8,bit(k));
+  set(7,8,bit(6)); set(8,8,bit(7)); set(8,7,bit(8));
+  for(let k=9;k<15;k++) set(8,14-k,bit(k));
+  for(let k=0;k<8;k++)  set(8,size-1-k,bit(k));
+  for(let k=8;k<15;k++) set(size-15+k,8,bit(k));
+  set(size-8,8,true);
+  return m;
+}
+function qrSvg(text, opts){
+  opts=opts||{};
+  const m=qrMatrix(text), n=m.length, q=opts.quiet!==undefined?opts.quiet:2;
+  const total=n+q*2, cell=opts.cell||3;
+  let d='';
+  for(let r=0;r<n;r++) for(let c=0;c<n;c++) if(m[r][c]) d+=`M${c+q} ${r+q}h1v1h-1z`;
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${total*cell}" height="${total*cell}" viewBox="0 0 ${total} ${total}" shape-rendering="crispEdges">
+    <rect width="${total}" height="${total}" fill="#fff"/><path d="${d}" fill="#000"/></svg>`;
+}
+
+/* ==========================================================
+   CÓDIGO DE BARRAS — Code 39 (puro JS)
+   ========================================================== */
+const C39={
+  '0':'nnnwwnwnn','1':'wnnwnnnnw','2':'nnwwnnnnw','3':'wnwwnnnnn','4':'nnnwwnnnw',
+  '5':'wnnwwnnnn','6':'nnwwwnnnn','7':'nnnwnnwnw','8':'wnnwnnwnn','9':'nnwwnnwnn',
+  'A':'wnnnnwnnw','B':'nnwnnwnnw','C':'wnwnnwnnn','D':'nnnnwwnnw','E':'wnnnwwnnn',
+  'F':'nnwnwwnnn','G':'nnnnnwwnw','H':'wnnnnwwnn','I':'nnwnnwwnn','J':'nnnnwwwnn',
+  'K':'wnnnnnnww','L':'nnwnnnnww','M':'wnwnnnnwn','N':'nnnnwnnww','O':'wnnnwnnwn',
+  'P':'nnwnwnnwn','Q':'nnnnnnwww','R':'wnnnnnwwn','S':'nnwnnnwwn','T':'nnnnwnwwn',
+  'U':'wwnnnnnnw','V':'nwwnnnnnw','W':'wwwnnnnnn','X':'nwnnwnnnw','Y':'wwnnwnnnn',
+  'Z':'nwwnwnnnn','-':'nwnnnnwnw','.':'wwnnnnwnn',' ':'nwwnnnwnn','$':'nwnwnwnnn',
+  '/':'nwnwnnnwn','+':'nwnnnwnwn','%':'nnnwnwnwn','*':'nwnnwnwnn'
+};
+const C39V={};
+'0123456789'.split('').forEach((c,i)=>C39V[c]=i);
+'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').forEach((c,i)=>C39V[c]=10+i);
+Object.assign(C39V,{'-':36,'.':37,' ':38,'$':39,'/':40,'+':41,'%':42});
+function code39(text){
+  const up=String(text).toUpperCase().split('').filter(c=>C39[c]);
+  if(!up.length) return null;
+  let sum=0; up.forEach(c=>sum+=C39V[c]);
+  const check='0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ-. $/+%'[sum%43];
+  const seq=['*'].concat(up,[check,'*']);
+  const NARR=1, WIDE=3, GAP=1, QZ=10;
+  const bars=[]; let x=QZ;
+  for(const ch of seq){
+    const p=C39[ch];
+    bars.push({x0:x, p});
+    let wsum=0; for(const e of p) wsum += (e==='w'?WIDE:NARR);
+    x += wsum + GAP;
+  }
+  const total=x-GAP+QZ;
+  let rects='';
+  for(const b of bars){
+    let o=0;
+    for(let i=0;i<9;i++){
+      const w=(b.p[i]==='w'?WIDE:NARR);
+      if(i%2===0) rects+=`<rect x="${b.x0+o}" y="0" width="${w}" height="30"/>`;
+      o+=w;
+    }
+  }
+  return {rects, total, check};
+}
+function code39Svg(text){
+  const r=code39(text); if(!r) return '';
+  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${r.total} 30" preserveAspectRatio="none">${r.rects}</svg>`;
+}
+
+/* ==========================================================
+   IMPRESSÃO
+   ========================================================== */
+let PRINT = { printer:null, sim:false, width:58, doc:null, title:'' };
+
+function openPrint(o){
+  PRINT = Object.assign({ printer:null, sim:false, width:58, doc:null, title:'Imprimir' }, o);
+  // pré-seleciona a impressora configurada (config.printer_name) ou a padrão
+  const cfg = M.printers.find(p => p.name === M.settingsPrinter) || M.printers.find(p => p.def) || M.printers[0];
+  PRINT.printer = cfg ? cfg.name : null;
+  PRINT.sim = !cfg;
+  PRINT.width = M.settingsWidth || (cfg && cfg.widths[0]) || 58;
+  PRINT.doc = o.doc;
+
+  document.getElementById('printTitle').textContent = o.title || 'Imprimir';
+  renderPrint();
+  document.getElementById('printOverlay').classList.add('open');
+}
+function renderPrint(){
+  const cfg = M.printers.find(p => p.name === PRINT.printer);
+  document.getElementById('pList').innerHTML = M.printers.map((p,i) => `
+    <label class="plabel ${p.name===PRINT.printer?'sel':''}" onclick="pickPrinter('${esc(p.name)}')">
+      <input type="radio" name="printer" ${p.name===PRINT.printer?'checked':''}>
+      <span class="pname">${esc(p.name)}</span>
+      <span class="ploc">${esc(p.loc)}<br>${esc(p.dpi)}</span>
+    </label>`).join('');
+
+  const sim = document.getElementById('pSim');
+  sim.classList.toggle('sel', PRINT.sim);
+  document.getElementById('pSimRadio').checked = PRINT.sim;
+
+  const sel = document.getElementById('pWidth');
+  const widths = (PRINT.sim || !cfg) ? [58,80] : cfg.widths;
+  sel.innerHTML = widths.map(w => `<option value="${w}" ${w===PRINT.width?'selected':''}>${w} mm</option>`).join('');
+  document.getElementById('pDpi').textContent = PRINT.sim ? 'modo simulado' : (cfg ? cfg.dpi : '');
+  document.getElementById('pPreview').textContent = PRINT.doc || '';
+  document.getElementById('pCodes').innerHTML = PRINT.codes || '';
+  document.getElementById('pPayload').textContent = PRINT.payload ? ('Conteúdo lido pelo QR: ' + PRINT.payload) : '';
+  document.getElementById('pOk').textContent = PRINT.sim ? 'Gerar comprovante' : '🖨 Imprimir';
+}
+function pickPrinter(name){
+  PRINT.printer = name; PRINT.sim = false;
+  const cfg = M.printers.find(p => p.name === name);
+  if(cfg && cfg.widths.indexOf(PRINT.width) === -1) PRINT.width = cfg.widths[0];
+  renderPrint();
+}
+function pickSim(){
+  PRINT.sim = true; PRINT.printer = null;
+  renderPrint();
+}
+function doPrint(){
+  const dest = PRINT.sim ? 'modo simulado (sem impressora)' : PRINT.printer;
+  if(!PRINT.sim && !PRINT.printer) return toast('Selecione uma impressora','err');
+  // persiste a escolha, como config.printer_name / printer_width_mm
+  if(!PRINT.sim){ M.settingsPrinter = PRINT.printer; M.settingsWidth = PRINT.width; }
+  closePrint();
+  toast(`Impresso em ${dest} · ${PRINT.width}mm`,'ok');
+}
+function closePrint(){ document.getElementById('printOverlay').classList.remove('open'); }
+document.getElementById('printOverlay').onclick = e => { if(e.target.id==='printOverlay') closePrint(); };
+
+/* --- Ver ticket (QR + barras) sem imprimir --- */
+function verTicket(){
+  const tabEl = document.querySelector('.tab.active');
+  const isActive = tabEl && tabEl.textContent.includes('Presentes');
+  const box = isActive ? 'tabPresentes' : 'tabHistorico';
+  const tr = document.querySelector('#'+box+' tr.selected');
+  if(!tr) return needSel('Selecione um ticket na lista para ver o comprovante.');
+  const r = [...tr.children].map(td => td.textContent.trim());
+  modal('Ticket ' + r[0] + ' — ' + (isActive ? 'entrada' : 'saída'),
+    ticketBoxHtml(r, isActive) +
+    `<div class="hint" style="margin-top:10px">O <b>QR Code</b> e o <b>código de barras</b> são gerados
+     a partir do número do ticket <b>${esc(r[0])}</b> e podem ser lidos por qualquer leitor.</div>`,
+    `<button class="ghost" onclick="closeModal()">Fechar</button>
+     <button class="primary" onclick="closeModal();reprint()">⟳ Reimprimir</button>`);
+}
+
+/* --- Recurso 3: reimprimir ticket (agora pergunta a impressora) --- */
+function ticketPayload(r, isActive){
+  return ['MP1', r[0], r[1], r[3], isActive?'ENTRADA':'SAIDA'].join('|');
+}
+function ticketCodesHtml(r, isActive){
+  const num = r[0];
+  const qr  = qrSvg(ticketPayload(r,isActive), {cell:3, quiet:2});
+  const bc  = code39Svg(num.replace(/[^0-9A-Za-z-]/g,''));
+  return `
+    <div class="tkq">${qr}<div class="cap">${esc(num)}</div></div>
+    <div class="tkb">${bc}<div class="hrt">${esc(num)}</div></div>`;
+}
+function ticketBoxHtml(r, isActive){
+  return `<div class="ticketbox">
+    <div class="receipt">${esc(isActive ? receiptEntrada(r) : receiptSaida(r))}</div>
+    ${ticketCodesHtml(r,isActive)}
+    <div class="payload">QR: ${esc(ticketPayload(r,isActive))}</div>
+  </div>`;
+}
+function reprint(){
+  const tabEl = document.querySelector('.tab.active');
+  const isActive = tabEl && tabEl.textContent.includes('Presentes');
+  const box = isActive ? 'tabPresentes' : 'tabHistorico';
+  const tr = document.querySelector('#'+box+' tr.selected');
+  if(!tr) return needSel('Selecione um ticket na lista para reimprimir.');
+  const row = [...tr.children].map(td => td.textContent.trim());
+
+  openPrint({
+    title: isActive ? 'Reimprimir ticket de entrada' : 'Reimprimir comprovante de saída',
+    doc: isActive ? receiptEntrada(row) : receiptSaida(row),
+    codes: ticketCodesHtml(row, isActive),
+    payload: ticketPayload(row, isActive)
+  });
+}
+function rule(w){ return '-'.repeat(w); }
+function receiptEntrada(r){
+  const W = PRINT.width >= 80 ? 42 : 32;
+  return [
+    'MASTERPARK',
+    'Gestão de Estacionamentos',
+    '',
+    'Estacionamento: MasterPark Center',
+    rule(W),
+    'DOCUMENTO DE ENTRADA',
+    rule(W),
+    'Ticket: ' + r[0],
+    'Placa: ' + r[1],
+    'Data/hora: ' + r[2],
+    'Vaga: ' + r[3],
+    rule(W),
+    'BEM VINDO',
+    'Comprovante válido para retirada',
+    rule(W),
+  ].join('\n');
+}
+function receiptSaida(r){
+  const W = PRINT.width >= 80 ? 42 : 32;
+  return [
+    'MASTERPARK',
+    'Gestão de Estacionamentos',
+    '',
+    'Estacionamento: MasterPark Center',
+    rule(W),
+    'COMPROVANTE DE SAÍDA',
+    rule(W),
+    'Ticket: ' + r[0],
+    'Placa: ' + r[1],
+    'Entrada: ' + r[2],
+    'Saída: ' + r[3],
+    'Valor: ' + r[4],
+    'Status: ' + r[5],
+    rule(W),
+    'Obrigado pela preferência!',
+    'Volte sempre',
+    rule(W),
+  ].join('\n');
+}
+
+/* --- Recurso 1: mensalistas alterar/excluir --- */
+function mNew(){
+  modal('Novo Mensalista', `
+    <div class="form2">
+      <label class="field"><span>Cliente *</span><select>${M.customers.map(c=>`<option>${c[1]}</option>`).join('')}</select></label>
+      <label class="field"><span>Placa *</span><input placeholder="ABC1D23"></label>
+      <label class="field"><span>Plano</span><select><option>Plano Mensal</option><option>Plano Semanal</option></select></label>
+      <label class="field"><span>Mensalidade (R$)</span><input type="number" value="220.00"></label>
+      <label class="field"><span>Vencimento</span><input type="date"></label>
+    </div>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveMNew()">Cadastrar</button>`);
+}
+function saveMNew(){ closeModal(); toast('Mensalista cadastrado — MENSALISTA_CRIADO','ok'); }
+
+function mEdit(){
+  const r = getSel(); if(!r) return needSel('Selecione um mensalista para alterar.');
+  modal('Alterar mensalista — '+r[1], `
+    <div class="form2">
+      <label class="field"><span>Cliente</span><input value="${esc(r[1])}"></label>
+      <label class="field"><span>Placa</span><input value="${esc(r[2])}"></label>
+      <label class="field"><span>Plano</span><select><option>${esc(r[3])}</option><option>Plano Semanal</option></select></label>
+      <label class="field"><span>Mensalidade (R$)</span><input value="${esc(r[4]).replace('R$ ','')}"></label>
+      <label class="field"><span>Vencimento</span><input type="date"></label>
+      <label class="field"><span>Status</span><select><option>ATIVO</option><option>INADIMPLENTE</option><option>BLOQUEADO</option></select></label>
+    </div>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button><button class="primary" onclick="closeModal();toast('Mensalista alterado — MENSALISTA_ALTERADO','ok')">Salvar alterações</button>`);
+}
+function mDel(){
+  const r = getSel(); if(!r) return needSel('Selecione um mensalista para excluir.');
+  confirmModal('Excluir mensalista',
+    `Excluir <b>${esc(r[1])}</b> (${esc(r[2])})?<br><span class="hint">O registro será removido e a ação fica registrada na auditoria (<b>MENSALISTA_REMOVIDO</b>). Mensalidades já pagas são preservadas.</span>`,
+    'Excluir', ()=> toast('Mensalista excluído — MENSALISTA_REMOVIDO','ok'));
+}
+function mPay(){
+  modal('Receber mensalidade', `<div class="hint">Selecione o mensalista e a forma de pagamento.</div>
+    <label class="field" style="margin-top:10px"><span>Mensalista</span><select>${M.pendingPay.map(p=>`<option>${p[0]} — ${p[2]}</option>`).join('')}</select></label>
+    <label class="field"><span>Forma</span><select><option>💵 Dinheiro</option><option>⚡ Pix</option><option>💳 Crédito</option></select></label>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button><button class="success" onclick="closeModal();toast('Mensalidade recebida — MENSALIDADE_PAGA','ok')">Receber</button>`);
+}
+function mPayOne(n){ toast('Mensalidade de '+n+' recebida','ok'); }
+
+/* --- Recurso 2: clientes alterar/excluir + veículos --- */
+function cNew(){
+  modal('Novo Cliente', `
+    <div class="form2">
+      <label class="field"><span>Nome *</span><input id="cName" placeholder="Nome completo"></label>
+      <label class="field"><span>Telefone</span><input placeholder="(11) 90000-0000"></label>
+      <label class="field"><span>E-mail</span><input placeholder="cliente@email.com"></label>
+      <label class="field"><span>Documento</span><input placeholder="CPF/CNPJ"></label>
+    </div>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button><button class="primary" onclick="saveCNew()">Cadastrar</button>`);
+}
+function saveCNew(){
+  const n = document.getElementById('cName').value.trim();
+  if(!n) return toast('Informe o nome','err');
+  closeModal(); toast('Cliente cadastrado — CLIENTE_CRIADO','ok');
+}
+function cEdit(){
+  const r = getSel(); if(!r) return needSel('Selecione um cliente para alterar.');
+  modal('Alterar Cliente — '+r[1], `
+    <div class="form2">
+      <label class="field"><span>Nome</span><input value="${esc(r[1])}"></label>
+      <label class="field"><span>Telefone</span><input value="${esc(r[2])}"></label>
+      <label class="field"><span>E-mail</span><input value="${esc(r[3])}"></label>
+      <label class="field"><span>Status</span><select><option>${esc(r[5])}</option><option>ATIVO</option><option>INATIVO</option></select></label>
+    </div>`,
+    `<button class="ghost" onclick="closeModal()">Cancelar</button><button class="primary" onclick="closeModal();toast('Cliente alterado — CLIENTE_ALTERADO','ok')">Salvar alterações</button>`);
+}
+function cDel(){
+  const r = getSel(); if(!r) return needSel('Selecione um cliente para excluir.');
+  const n = r[4], hasTickets = n !== '0';
+  modal('Excluir Cliente', `
+    <div>Excluir <b>${esc(r[1])}</b>?</div>
+    ${ hasTickets
+      ? `<div class="warnbox" style="margin-top:10px">⚠️ Este cliente possui <b>histórico vinculado</b>
+           (veículos / tickets / mensalistas). A exclusão será <b>bloqueada</b> pelo repositório
+           (<code>CustomerRepo.delete</code>) para preservar a integridade e o registro fiscal.
+           <br><span class="hint">Neste mockup a regra é simulada: o botão fica desabilitado.</span></div>`
+      : `<div class="page-sub" style="margin-top:8px">Sem vínculos — exclusão permitida.</div>`}
+    ${ hasTickets
+      ? `<div class="actions" style="margin-top:6px"><button class="ghost" onclick="closeModal()">Fechar</button>
+           <button class="danger" disabled style="opacity:.5;cursor:not-allowed">Excluir (bloqueado)</button></div>`
+      : ''}`,
+    hasTickets
+      ? `<button class="ghost" onclick="closeModal()">Fechar</button>`
+      : `<button class="ghost" onclick="closeModal()">Cancelar</button>
+         <button class="danger" onclick="closeModal();toast('Cliente excluído — CLIENTE_REMOVIDO','ok')">Excluir</button>`);
+}
+function cVeh(){
+  const r = getSel(); if(!r) return needSel('Selecione um cliente para gerenciar veículos.');
+  const id = r[0], vs = M.vehicles[id] || [];
+  modal('Veículos — '+r[1], `
+    ${vs.length? `<table style="margin-bottom:12px"><thead><tr>
+        ${['Cód.','Placa','Modelo','Ano','Cor'].map(h=>`<th>${h}</th>`).join('')}</tr></thead>
+        <tbody>${vs.map(v=>`<tr>${v.map(x=>`<td>${x}</td>`).join('')}</tr>`).join('')}</tbody></table>`
+      : `<div class="page-sub" style="margin-bottom:12px">Nenhum veículo cadastrado.</div>`}
+    <div class="form2">
+      <label class="field"><span>Placa *</span><input id="vPlate" placeholder="ABC1D23"></label>
+      <label class="field"><span>Modelo</span><input placeholder="Ex.: Onix"></label>
+      <label class="field"><span>Ano</span><input placeholder="2024"></label>
+      <label class="field"><span>Cor</span><input placeholder="Prata"></label>
+    </div>`,
+    `<button class="danger" onclick="toast('Veículo excluído')">Excluir veículo</button>
+     <button class="ghost" onclick="closeModal()">Fechar</button>
+     <button class="primary" onclick="addVeh('${id}')">Adicionar veículo</button>`);
+}
+function addVeh(id){
+  const p = document.getElementById('vPlate').value.trim().toUpperCase();
+  if(!p) return toast('Informe a placa','err');
+  (M.vehicles[id] = M.vehicles[id] || []).push([ 'V-'+String(M.vehicles[id].length+1).padStart(3,'0'), p, '—', '—', '—' ]);
+  closeModal(); toast('Veículo adicionado','ok'); cVeh();
+}
+
+/* ==========================================================
+   BUSCA GLOBAL (Ctrl+K) + ATALHOS
+   ========================================================== */
+const SO = document.getElementById('searchOverlay');
+function openSearch(){ SO.classList.add('open'); document.getElementById('searchInput').focus(); }
+function closeSearch(){ SO.classList.remove('open'); }
+document.getElementById('btnSearch').onclick = openSearch;
+document.getElementById('searchInput').addEventListener('input', e=>{
+  const q = e.target.value.toLowerCase();
+  const idx = [];
+  M.ticketsAtivos.forEach(r=>idx.push(['🎫','Ticket '+r[0]+' — '+r[1],'tickets',r[0]]));
+  M.customers.forEach(c=>idx.push(['👤',c[1]+' — '+(c[3]||''),'customers',c[1]]));
+  M.monthly.forEach(m=>idx.push(['🗓',m[1]+' — mensalista','monthly',m[1]]));
+  const res = idx.filter(x=>x[1].toLowerCase().includes(q)).slice(0,8);
+  document.getElementById('searchResults').innerHTML = res.length
+    ? res.map((x,i)=>`<div class="sresult ${i===0?'on':''}" onclick="go('${x[2]}');closeSearch()">${x[0]}<span>${esc(x[1])}</span><span class="tag">${x[2]}</span></div>`).join('')
+    : '<div class="hint">Nada encontrado.</div>';
+});
+SO.onclick = e=>{ if(e.target===SO) closeSearch(); };
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){ closeModal(); closeSearch(); closePrint(); return; }
+  if(e.ctrlKey && e.key.toLowerCase()==='k'){ e.preventDefault(); openSearch(); return; }
+  const map = {F2:'entry',F3:'exit',F4:'tickets',F5:'cash',F6:'monthly',F7:'customers',F9:'reports'};
+  if(map[e.key]) { e.preventDefault(); go(map[e.key]); }
+});
+
+render();
+</script>
+</body>
+</html>
